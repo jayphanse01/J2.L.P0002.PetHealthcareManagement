@@ -389,7 +389,7 @@ public class MainView extends javax.swing.JFrame {
             return;
         }
         if (!regisValid.checkAge(ageText)) {
-            JOptionPane.showMessageDialog(null, "Age must >= 0 and Integer type");
+            JOptionPane.showMessageDialog(null, "Age must > 0 and Integer type");
             return;
         }
         
@@ -438,6 +438,7 @@ public class MainView extends javax.swing.JFrame {
                     txaSymptoms.setText("");
                     isAddNew = false;
                     isUpdate = false;
+                    isFindByID = false;
                     loadTblRegistration();
                     tblRegistration.updateUI();
                     JOptionPane.showMessageDialog(this, "Add Success!");
@@ -472,6 +473,8 @@ public class MainView extends javax.swing.JFrame {
                     txaSymptoms.setText("");
                     isAddNew = false;
                     isUpdate = false;
+                    isFindByID = false;
+                    isDelete = false;
                     loadTblRegistration();
                     tblRegistration.updateUI();
                     JOptionPane.showMessageDialog(this, "Update Success!");
@@ -524,6 +527,10 @@ public class MainView extends javax.swing.JFrame {
 
     private void btnGetAllDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGetAllDataActionPerformed
         // TODO add your handling code here:
+        isAddNew = false;
+        isUpdate = false;
+        isFindByID = false;
+        isDelete = false;
         loadTblRegistration();
         txtRegistrationID.setText("");
         txtRegistrationID.setEditable(true);
@@ -669,7 +676,7 @@ public class MainView extends javax.swing.JFrame {
         // TODO add your handling code here:
         isAddNew = true;
         isUpdate = false;
-        
+        isDelete = false;
         txtRegistrationID.setText("");
         txtRegistrationID.setEditable(true);
         txtFullName.setText("");
