@@ -33,7 +33,6 @@ public class RegistrationImpl extends UnicastRemoteObject implements Registratio
     private String getFilePath(){
         String basePath = new File("").getAbsolutePath();
         basePath = basePath + "\\src\\khanhpl\\data\\RegistrationData.txt";
-        System.out.println(basePath);
         return basePath;
     }
     
@@ -168,7 +167,7 @@ public class RegistrationImpl extends UnicastRemoteObject implements Registratio
                             + dto.getEmail() + "-" + dto.getPhone() + "-" + dto.getAddress() + "-" + dto.getNumberOfPet() + "-" + dto.getSymptoms() + "\n";
 
                     sb.append(updateLine);
-                    System.out.println("StringBuilder: " + sb);
+//                    System.out.println("StringBuilder: " + sb);
                 } else {
                     sb.append(line);
                     sb.append("\n");

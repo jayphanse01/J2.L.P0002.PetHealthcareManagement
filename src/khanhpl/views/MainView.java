@@ -6,10 +6,13 @@
 package khanhpl.views;
 
 import java.rmi.Naming;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import khanhpl.dto.RegistrationDTO;
@@ -520,7 +523,6 @@ public class MainView extends javax.swing.JFrame {
             txaSymptoms.setText(dto.getSymptoms());
 
         } catch (Exception e) {
-            System.out.println("");
             e.printStackTrace();
         }
     }//GEN-LAST:event_tblRegistrationMouseClicked
@@ -575,7 +577,6 @@ public class MainView extends javax.swing.JFrame {
 
                         searchData.add(phone);
                         searchData.add(address);
-                        System.out.println(searchData);
                         tblRegistrationSearchModel.addRow(searchData);
                     }
                 }
@@ -644,8 +645,9 @@ public class MainView extends javax.swing.JFrame {
             if (isFindByID) {
                 try {
                     RegistrationDTO dto = registrationInterface.findByRegistrationID(id);
-                    JOptionPane.showMessageDialog(this, "Found Success!");
+                    
                     txtRegistrationID.setText(dto.getRegistrationID());
+                    JOptionPane.showMessageDialog(this, "Found Success!");
                     txtRegistrationID.setEditable(false);
                     txtFullName.setText(dto.getFullName());
                     txtAge.setText(Integer.toString(dto.getAge()));
@@ -664,9 +666,10 @@ public class MainView extends javax.swing.JFrame {
                     txaSymptoms.setText(dto.getSymptoms());
                     isAddNew = false;
                     isUpdate = true;
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } catch (NullPointerException e) {
                     JOptionPane.showMessageDialog(this, "Cannot find!");
+                } catch (RemoteException ex) {
+                    Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
