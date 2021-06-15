@@ -22,6 +22,7 @@ public class RegistrationServer {
             LocateRegistry.createRegistry(8888);
             String rmiUrl = "rmi://localhost:8888/RegistrationServer";
             Naming.bind(rmiUrl, registrationInterface);
+            
             JOptionPane.showMessageDialog(null, "Server started!");
         } catch (Exception e) {
             e.printStackTrace();

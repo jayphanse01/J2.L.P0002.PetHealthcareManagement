@@ -27,8 +27,16 @@ public class RegistrationImpl extends UnicastRemoteObject implements Registratio
 
     }
 
-    String filePath = "D:\\major4\\lab221v2\\J2.L.P0006.Pet.HealthCare.Management\\src\\khanhpl\\data\\RegistrationData.txt";
-
+//    String filePath = "D:\\major4\\lab221v2\\J2.L.P0006.Pet.HealthCare.Management\\src\\khanhpl\\data\\RegistrationData.txt";
+    String filePath = getFilePath();
+    
+    private String getFilePath(){
+        String basePath = new File("").getAbsolutePath();
+        basePath = basePath + "\\src\\khanhpl\\data\\RegistrationData.txt";
+        System.out.println(basePath);
+        return basePath;
+    }
+    
     @Override
     public boolean createRegistration(RegistrationDTO dto) throws RemoteException {
         try {

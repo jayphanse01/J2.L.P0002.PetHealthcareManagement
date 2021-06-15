@@ -30,8 +30,8 @@ public class MainView extends javax.swing.JFrame {
     private DefaultTableModel tblRegistrationSearchModel;
     private boolean isFindByID = false;
     private boolean isDelete = false;
-    private boolean isAddNewOrUpdate = true;
-
+    private boolean isAddNew = false;
+    private boolean isUpdate = false;
     public MainView() {
         initComponents();
         getConnectionToServer();
@@ -113,7 +113,7 @@ public class MainView extends javax.swing.JFrame {
 
         jLabel2.setText("Sort By Name:");
 
-        cbxSortByName.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cbxSortByName.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Descending", "Ascending" }));
         cbxSortByName.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cbxSortByNameActionPerformed(evt);
@@ -378,7 +378,7 @@ public class MainView extends javax.swing.JFrame {
         String address = txaAddress.getText().trim();
         String numberOfPetText = txtNumberOfPet.getText().trim();
         String symptoms = txaSymptoms.getText().trim();
-        
+
         RegistrationValidation regisValid = new RegistrationValidation();
         if (!regisValid.checkRegisID(registrationID)) {
             JOptionPane.showMessageDialog(null, "RegistrationID: max length is 10, not null, not contains special characters");
@@ -392,29 +392,38 @@ public class MainView extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Age must >= 0 and Integer type");
             return;
         }
+        
         if (!regisValid.checkEmail(email)) {
             JOptionPane.showMessageDialog(null, " Email: max length is 30, contain only one “@” character, not contain other special characters");
             return;
         }
-        if (regisValid.checkPhone(phone)) {
+        if (!regisValid.checkPhone(phone)) {
             JOptionPane.showMessageDialog(null, " Phone: max length is 15, contain numeric characters only (0-9)");
             return;
         }
-        if (regisValid.checkNumberOfPet(numberOfPetText)) {
+        if (!regisValid.checkAddress(address)) {
+            JOptionPane.showMessageDialog(null, "Address must not be left blank");
+            return;
+        }
+        if (!regisValid.checkNumberOfPet(numberOfPetText)) {
             JOptionPane.showMessageDialog(null, "Number of pet: must be > 0");
+            return;
+        }
+        if (!regisValid.checkSymptoms(symptoms)) {
+            JOptionPane.showMessageDialog(null, "Symptoms must not be left black");
             return;
         }
         int age = Integer.valueOf(ageText);
         int numberOfPet = Integer.parseInt(numberOfPetText);
         //add new mode
-        if (isAddNewOrUpdate) {
+        if (isAddNew) {
             try {
-                if (regisValid.checkDupRegisID(registrationID)) {
+                if (!regisValid.checkDupRegisID(registrationID)) {
                     JOptionPane.showMessageDialog(null, "Registration ID has been existed");
                     return;
                 }
                 RegistrationDTO dto = new RegistrationDTO(registrationID, fullName, age, gender, email, phone, address, numberOfPet, symptoms);
-                //registrationInterface = (RegistrationInterface) Naming.lookup(Constants.RMI_URL);
+                
                 boolean created = registrationInterface.createRegistration(dto);
                 if (created) {
                     txtRegistrationID.setText("");
@@ -427,7 +436,8 @@ public class MainView extends javax.swing.JFrame {
                     txaAddress.setText("");
                     txtNumberOfPet.setText("");
                     txaSymptoms.setText("");
-                    isAddNewOrUpdate = false;
+                    isAddNew = false;
+                    isUpdate = false;
                     loadTblRegistration();
                     tblRegistration.updateUI();
                     JOptionPane.showMessageDialog(this, "Add Success!");
@@ -442,6 +452,10 @@ public class MainView extends javax.swing.JFrame {
 
         } else { //update
             try {
+                if (!isUpdate) {
+                    JOptionPane.showMessageDialog(null, "Please press Add New button before save!!!");
+                    return;
+                }
                 RegistrationDTO dto = new RegistrationDTO(registrationID, fullName, age, gender, email, phone, address, numberOfPet, symptoms);
 
                 boolean updated = registrationInterface.updateRegistration(dto);
@@ -456,7 +470,8 @@ public class MainView extends javax.swing.JFrame {
                     txaAddress.setText("");
                     txtNumberOfPet.setText("");
                     txaSymptoms.setText("");
-                    isAddNewOrUpdate = false;
+                    isAddNew = false;
+                    isUpdate = false;
                     loadTblRegistration();
                     tblRegistration.updateUI();
                     JOptionPane.showMessageDialog(this, "Update Success!");
@@ -475,7 +490,8 @@ public class MainView extends javax.swing.JFrame {
     private void tblRegistrationMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblRegistrationMouseClicked
         // TODO add your handling code here:
         isFindByID = true;
-        isAddNewOrUpdate = false;
+        isAddNew = false;
+        isUpdate = true;
         isDelete = true;
         int selectedRow = tblRegistration.getSelectedRow();
         String selectedId = (String) tblRegistration.getValueAt(selectedRow, 0);
@@ -613,38 +629,47 @@ public class MainView extends javax.swing.JFrame {
     private void btnSearchByIDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchByIDActionPerformed
         // TODO add your handling code here:
         isFindByID = true;
-        String id = txtRegistrationID.getText();
-        if (isFindByID) {
-            try {
-                RegistrationDTO dto = registrationInterface.findByRegistrationID(id);
-                JOptionPane.showMessageDialog(this, "Found Success!");
-                txtRegistrationID.setText(dto.getRegistrationID());
-                txtRegistrationID.setEditable(false);
-                txtFullName.setText(dto.getFullName());
-                txtAge.setText(Integer.toString(dto.getAge()));
-                if (dto.isGender()) {
-                    rdMale.setSelected(true);
-                    rdFemale.setSelected(false);
+        String id = txtRegistrationID.getText().trim();
+        if (!(id.length() > 0)) {
+            JOptionPane.showMessageDialog(null, "Please input Registration ID for searching");
+            return;
+        } else {
+            if (isFindByID) {
+                try {
+                    RegistrationDTO dto = registrationInterface.findByRegistrationID(id);
+                    JOptionPane.showMessageDialog(this, "Found Success!");
+                    txtRegistrationID.setText(dto.getRegistrationID());
+                    txtRegistrationID.setEditable(false);
+                    txtFullName.setText(dto.getFullName());
+                    txtAge.setText(Integer.toString(dto.getAge()));
+                    if (dto.isGender()) {
+                        rdMale.setSelected(true);
+                        rdFemale.setSelected(false);
 
-                } else {
-                    rdMale.setSelected(false);
-                    rdFemale.setSelected(true);
+                    } else {
+                        rdMale.setSelected(false);
+                        rdFemale.setSelected(true);
+                    }
+                    txtEmail.setText(dto.getEmail());
+                    txtPhone.setText(dto.getPhone());
+                    txaAddress.setText(dto.getAddress());
+                    txtNumberOfPet.setText(Integer.toString(dto.getNumberOfPet()));
+                    txaSymptoms.setText(dto.getSymptoms());
+                    isAddNew = false;
+                    isUpdate = true;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(this, "Cannot find!");
                 }
-                txtEmail.setText(dto.getEmail());
-                txtPhone.setText(dto.getPhone());
-                txaAddress.setText(dto.getAddress());
-                txtNumberOfPet.setText(Integer.toString(dto.getNumberOfPet()));
-                txaSymptoms.setText("");
-            } catch (Exception e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Cannot find!");
             }
         }
     }//GEN-LAST:event_btnSearchByIDActionPerformed
 
     private void btnAddNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddNewActionPerformed
         // TODO add your handling code here:
-        isAddNewOrUpdate = true;
+        isAddNew = true;
+        isUpdate = false;
+        
         txtRegistrationID.setText("");
         txtRegistrationID.setEditable(true);
         txtFullName.setText("");

@@ -5,11 +5,13 @@
  */
 package khanhpl.dto;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Admin
  */
-public class RegistrationDTO {
+public class RegistrationDTO  implements Serializable{
     private String registrationID, fullName;
     private int age;
     private boolean gender;
