@@ -35,6 +35,7 @@ public class MainView extends javax.swing.JFrame {
     private boolean isDelete = false;
     private boolean isAddNew = false;
     private boolean isUpdate = false;
+
     public MainView() {
         initComponents();
         getConnectionToServer();
@@ -395,7 +396,7 @@ public class MainView extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Age must > 0 and Integer type");
             return;
         }
-        
+
         if (!regisValid.checkEmail(email)) {
             JOptionPane.showMessageDialog(null, " Email: max length is 30, contain only one “@” character, not contain other special characters");
             return;
@@ -426,7 +427,7 @@ public class MainView extends javax.swing.JFrame {
                     return;
                 }
                 RegistrationDTO dto = new RegistrationDTO(registrationID, fullName, age, gender, email, phone, address, numberOfPet, symptoms);
-                
+
                 boolean created = registrationInterface.createRegistration(dto);
                 if (created) {
                     txtRegistrationID.setText("");
@@ -645,7 +646,7 @@ public class MainView extends javax.swing.JFrame {
             if (isFindByID) {
                 try {
                     RegistrationDTO dto = registrationInterface.findByRegistrationID(id);
-                    
+
                     txtRegistrationID.setText(dto.getRegistrationID());
                     JOptionPane.showMessageDialog(this, "Found Success!");
                     txtRegistrationID.setEditable(false);
@@ -712,6 +713,9 @@ public class MainView extends javax.swing.JFrame {
                         txtNumberOfPet.setText("");
                         txaSymptoms.setText("");
                         loadTblRegistration();
+                        isAddNew = false;
+                        isUpdate = false;
+                        isDelete = false;
                         tblRegistration.updateUI();
                         JOptionPane.showMessageDialog(this, "Remove Success!");
                     } else {
@@ -735,6 +739,9 @@ public class MainView extends javax.swing.JFrame {
             txaAddress.setText("");
             txtNumberOfPet.setText("");
             txaSymptoms.setText("");
+            isAddNew = false;
+            isUpdate = false;
+            isDelete = false;
             loadTblRegistration();
             tblRegistration.updateUI();
         }
